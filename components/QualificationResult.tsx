@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
 import type { QualificationResult, RunState } from "@/lib/types";
 
@@ -51,6 +52,20 @@ export function QualificationResult({ runState }: Props) {
     accessToken: runState?.accessToken ?? "",
     enabled: !!runState,
   } as Parameters<typeof useRealtimeRun>[1]);
+
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (run?.status === "COMPLETED" && run.output && runState?.runId && !savedRef.current) {
+      savedRef.current = true;
+      fetch("/api/leads/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId: runState.runId, result: run.output }),
+      }).catch(() => {
+        // non-fatal — history may show pending if this fails
+      });
+    }
+  }, [run?.status, run?.output, runState?.runId]);
 
   if (!runState) {
     return <IdleState />;

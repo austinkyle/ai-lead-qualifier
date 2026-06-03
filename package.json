@@ -1,0 +1,21 @@
+{
+  "name": "lead-qualifier",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx trigger.dev@latest dev",
+    "deploy": "npx trigger.dev@latest deploy",
+    "validate-env": "npx tsx tools/validate-env.ts",
+    "seed": "npx tsx tools/seed-test-leads.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@trigger.dev/sdk": "4.4.6",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0"
+  }
+}

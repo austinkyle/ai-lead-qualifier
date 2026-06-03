@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import type { LeadPayload, QualifyApiResponse, RunState } from "@/lib/types";
 
 type Props = {
@@ -160,53 +158,46 @@ export function LeadForm({ onResult, onLimitReached, isRunning }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Section: Contact */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted-foreground font-heading mb-3">
-          Your Information
-        </p>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Full Name" required>
-              <Input
-                placeholder="Jane Smith"
-                value={form.fullName}
-                onChange={(e) => set("fullName", e.target.value)}
-                required
-                className="bg-input border-border/60 focus:border-primary/70 transition-colors"
-              />
-            </Field>
-            <Field label="Business Name" required>
-              <Input
-                placeholder="Acme Co."
-                value={form.businessName}
-                onChange={(e) => set("businessName", e.target.value)}
-                required
-                className="bg-input border-border/60 focus:border-primary/70 transition-colors"
-              />
-            </Field>
-          </div>
-          <Field label="Email Address" required>
+      <SectionCard title="Your Information">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Full Name" required>
             <Input
-              type="email"
-              placeholder="jane@acme.com"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
+              placeholder="Jane Smith"
+              value={form.fullName}
+              onChange={(e) => set("fullName", e.target.value)}
               required
-              className="bg-input border-border/60 focus:border-primary/70 transition-colors"
+              className="focus-glow"
+              style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.1)" }}
+            />
+          </Field>
+          <Field label="Business Name" required>
+            <Input
+              placeholder="Acme Co."
+              value={form.businessName}
+              onChange={(e) => set("businessName", e.target.value)}
+              required
+              className="focus-glow"
+              style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.1)" }}
             />
           </Field>
         </div>
-      </div>
-
-      <Separator className="bg-border/40" />
+        <Field label="Email Address" required>
+          <Input
+            type="email"
+            placeholder="jane@acme.com"
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
+            required
+            className="focus-glow"
+            style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.1)" }}
+          />
+        </Field>
+      </SectionCard>
 
       {/* Section: Challenge */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted-foreground font-heading mb-3">
-          Your Challenge
-        </p>
+      <SectionCard title="Your Challenge">
         <Field label="What's your biggest challenge right now?" required>
           <Textarea
             placeholder="Describe the main problem you're trying to solve in 2–3 sentences…"
@@ -214,143 +205,95 @@ export function LeadForm({ onResult, onLimitReached, isRunning }: Props) {
             onChange={(e) => set("challenge", e.target.value)}
             required
             rows={3}
-            className="bg-input border-border/60 focus:border-primary/70 transition-colors resize-none"
+            className="focus-glow resize-none"
+            style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.1)" }}
           />
         </Field>
-      </div>
-
-      <Separator className="bg-border/40" />
+      </SectionCard>
 
       {/* Section: Business Profile */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted-foreground font-heading mb-3">
-          About Your Business
-        </p>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Business Type">
-              <Select value={form.businessType} onValueChange={(v) => set("businessType", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {BUSINESS_TYPE_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field label="Years in Business">
-              <Select value={form.yearsInBusiness} onValueChange={(v) => set("yearsInBusiness", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {YEARS_IN_BUSINESS_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Employees">
-              <Select value={form.employeeCount} onValueChange={(v) => set("employeeCount", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select size" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {EMPLOYEE_COUNT_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field label="Monthly Revenue">
-              <Select value={form.monthlyRevenue} onValueChange={(v) => set("monthlyRevenue", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {MONTHLY_REVENUE_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
-        </div>
-      </div>
-
-      <Separator className="bg-border/40" />
-
-      {/* Section: Buying Intent */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted-foreground font-heading mb-3">
-          Buying Intent
-        </p>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Monthly Budget">
-              <Select value={form.monthlyBudget} onValueChange={(v) => set("monthlyBudget", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {MONTHLY_BUDGET_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field label="Looking to Start">
-              <Select value={form.timeline} onValueChange={(v) => set("timeline", v)}>
-                <SelectTrigger className="bg-input border-border/60">
-                  <SelectValue placeholder="Select timeline" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border/60">
-                  {TIMELINE_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
-
-          <Field label="How Did You Hear About Us?">
-            <Select value={form.referralSource} onValueChange={(v) => set("referralSource", v)}>
-              <SelectTrigger className="bg-input border-border/60">
-                <SelectValue placeholder="Select source" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-border/60">
-                {REFERRAL_SOURCE_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <SectionCard title="About Your Business">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Business Type">
+            <StyledSelect value={form.businessType} onValueChange={(v) => set("businessType", v)} placeholder="Select type">
+              {BUSINESS_TYPE_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
+          </Field>
+          <Field label="Years in Business">
+            <StyledSelect value={form.yearsInBusiness} onValueChange={(v) => set("yearsInBusiness", v)} placeholder="Select range">
+              {YEARS_IN_BUSINESS_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
           </Field>
         </div>
-      </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Employees">
+            <StyledSelect value={form.employeeCount} onValueChange={(v) => set("employeeCount", v)} placeholder="Select size">
+              {EMPLOYEE_COUNT_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
+          </Field>
+          <Field label="Monthly Revenue">
+            <StyledSelect value={form.monthlyRevenue} onValueChange={(v) => set("monthlyRevenue", v)} placeholder="Select range">
+              {MONTHLY_REVENUE_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
+          </Field>
+        </div>
+      </SectionCard>
+
+      {/* Section: Buying Intent */}
+      <SectionCard title="Buying Intent">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Monthly Budget">
+            <StyledSelect value={form.monthlyBudget} onValueChange={(v) => set("monthlyBudget", v)} placeholder="Select range">
+              {MONTHLY_BUDGET_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
+          </Field>
+          <Field label="Looking to Start">
+            <StyledSelect value={form.timeline} onValueChange={(v) => set("timeline", v)} placeholder="Select timeline">
+              {TIMELINE_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </StyledSelect>
+          </Field>
+        </div>
+        <Field label="How Did You Hear About Us?">
+          <StyledSelect value={form.referralSource} onValueChange={(v) => set("referralSource", v)} placeholder="Select source">
+            {REFERRAL_SOURCE_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </StyledSelect>
+        </Field>
+      </SectionCard>
 
       {error && (
-        <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+        <p className="text-sm rounded-xl px-4 py-3"
+           style={{
+             color: "oklch(0.63 0.22 15)",
+             background: "oklch(0.63 0.22 15 / 10%)",
+             border: "1px solid oklch(0.63 0.22 15 / 20%)",
+           }}>
           {error}
         </p>
       )}
 
-      <Button
+      <button
         type="submit"
         disabled={isRunning}
-        className="w-full h-11 text-sm font-semibold tracking-wide bg-primary hover:bg-primary/85 transition-all duration-200 disabled:opacity-60"
+        className="btn-gradient w-full h-12 rounded-xl font-bold text-sm tracking-wide text-white flex items-center justify-center gap-2"
       >
         {isRunning ? (
           <span className="flex items-center gap-2">
-            <SpinnerIcon className="w-4 h-4 animate-spin" />
-            Analyzing…
+            <BouncingDots />
+            <span>Analyzing…</span>
           </span>
         ) : (
           <span className="flex items-center gap-2">
@@ -358,8 +301,21 @@ export function LeadForm({ onResult, onLimitReached, isRunning }: Props) {
             Analyze Lead
           </span>
         )}
-      </Button>
+      </button>
     </form>
+  );
+}
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="glass-section flex flex-col gap-4">
+      <p className="text-[10px] font-bold tracking-[0.16em] uppercase font-heading flex items-center gap-2"
+         style={{ color: "oklch(0.62 0.22 215 / 65%)" }}>
+        <span className="w-4 h-px inline-block" style={{ background: "linear-gradient(90deg, oklch(0.62 0.22 215 / 55%), transparent)" }} />
+        {title}
+      </p>
+      {children}
+    </div>
   );
 }
 
@@ -374,16 +330,65 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-medium text-foreground/90">
+      <Label className="text-sm font-medium" style={{ color: "oklch(0.75 0.010 220)" }}>
         {label}
         {required && (
-          <span className="text-primary/80 ml-0.5" aria-hidden>
+          <span style={{ color: "oklch(0.62 0.22 215 / 80%)" }} className="ml-0.5" aria-hidden>
             *
           </span>
         )}
       </Label>
       {children}
     </div>
+  );
+}
+
+function StyledSelect({
+  value,
+  onValueChange,
+  placeholder,
+  children,
+}: {
+  value: string;
+  onValueChange: (v: string | null) => void;
+  placeholder: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger
+        className="focus-glow"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          borderColor: "rgba(255,255,255,0.1)",
+        }}
+      >
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent
+        style={{
+          background: "oklch(0.11 0.022 230)",
+          borderColor: "rgba(255,255,255,0.10)",
+          backdropFilter: "blur(20px)",
+        }}
+      >
+        {children}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function BouncingDots() {
+  return (
+    <span className="flex items-center gap-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-white/80 inline-block"
+          style={{ animation: `dot-bounce 1.0s ease-in-out ${i * 0.16}s infinite` }}
+        />
+      ))}
+    </span>
   );
 }
 
@@ -399,31 +404,6 @@ function BoltIcon({ className }: { className?: string }) {
         fillRule="evenodd"
         d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
         clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function SpinnerIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
       />
     </svg>
   );

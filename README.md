@@ -1,6 +1,6 @@
-# Demo Lead Qualifier
+# AI Lead Qualifier
 
-A full-stack lead qualification web application that captures, scores, and routes inbound leads automatically. Built with a React front-end, Supabase backend, and deployed live on Vercel.
+A small SaaS app that scores inbound sales leads with AI. A user fills out a lead form (budget, timeline, revenue, challenge, etc.), and Claude analyzes it in the background and returns a 0–100 score, a hot/warm/cold/disqualified tier, and a plain-English recommendation — instead of a human having to read every submission and guess.
 
 🔗 **[Live Demo](https://frontend-tawny-theta.vercel.app/login)**
 
@@ -8,17 +8,18 @@ A full-stack lead qualification web application that captures, scores, and route
 
 ## What It Does
 
-Businesses waste time manually sorting through unqualified leads. This application replaces that manual process with an automated intake and qualification system — leads submit their information, the system scores them, and routes them accordingly.
+Businesses waste time manually sorting through unqualified leads. This app replaces that with an automated intake and qualification flow: a logged-in user submits a lead's info, a background job scores it against a weighted rubric (budget, timeline, and revenue count for ~80% of the score), and the result — tier, strengths, concerns, and a recommended next step — is shown in the UI and stored for later review.
 
 ---
 
 ## Features
 
-- **User authentication** — secure login and signup via Supabase Auth
-- **Lead intake form** — structured data capture from prospective leads
-- **Qualification logic** — scoring system that evaluates and routes leads based on responses
-- **Database integration** — all submissions stored and managed in Supabase
-- **Live deployment** — fully deployed and accessible via Vercel
+- **User authentication** — email/password auth via Supabase
+- **Lead intake form** — structured capture of company, contact, budget, timeline, revenue, and use case
+- **AI qualification** — a Trigger.dev background task calls the Claude API with a fixed scoring rubric and returns structured JSON (score, tier, summary, strengths, concerns, recommendation, confidence)
+- **History view** — past qualifications are stored in Supabase and browsable per user
+- **Usage limits + billing** — free users get 2 qualifications/day; Stripe Checkout and a billing portal unlock unlimited usage
+- **Live deployment** — running on Vercel with a Supabase backend
 
 ---
 
@@ -26,27 +27,29 @@ Businesses waste time manually sorting through unqualified leads. This applicati
 
 | Layer | Technology |
 |---|---|
-| Frontend | React, TypeScript, Tailwind CSS |
+| Frontend | Next.js (App Router), React, TypeScript, Tailwind CSS |
 | Backend / Database | Supabase (PostgreSQL + Auth) |
+| Background jobs | Trigger.dev |
+| AI | Anthropic Claude API |
+| Billing | Stripe (Checkout + customer portal + webhooks) |
 | Deployment | Vercel |
-| AI Integration | Claude API |
 
 ---
 
 ## Architecture
 
 ```
-User Submits Form
+User submits Lead Form (Next.js frontend)
       ↓
-React Frontend (Vercel)
+/api/qualify → checks auth + daily usage limit
       ↓
-Supabase Auth → Validates Session
+Trigger.dev background task ("qualify-lead")
       ↓
-Lead Scoring Logic
+Claude API scores the lead against a fixed rubric
       ↓
-Supabase Database → Stores Result
+Result written to Supabase, streamed back to the UI
       ↓
-Qualified / Unqualified Routing
+Stripe Checkout / portal handle upgrades past the free daily limit
 ```
 
 ---
@@ -55,27 +58,17 @@ Qualified / Unqualified Routing
 
 ```bash
 # Clone the repo
-git clone https://github.com/austinkyle/demo-lead-qualifier
+git clone https://github.com/austinkyle/ai-lead-qualifier
 
-# Install dependencies
+# Trigger.dev task (root)
 npm install
+cp .env.example .env   # ANTHROPIC_API_KEY, TRIGGER_SECRET_KEY
+npm run dev            # npx trigger.dev dev
 
-# Add environment variables
-cp .env.example .env
-# Fill in your Supabase URL, anon key, and Claude API key
-
-# Run locally
-npm run dev
-```
-
----
-
-## Environment Variables
-
-```
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_CLAUDE_API_KEY=your_claude_api_key
+# Frontend
+cd frontend
+npm install
+npm run dev             # Supabase + Stripe env vars required, see lib/supabase and lib/stripe
 ```
 
 ---
